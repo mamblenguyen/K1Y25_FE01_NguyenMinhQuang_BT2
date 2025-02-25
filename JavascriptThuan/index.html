@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiệu ứng Xuất Hiện Dần và Đổi Màu</title>
+    <style>
+        .container {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            position: relative;
+
+        }
+
+        .main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-15deg);
+            transform-origin: center;
+        }
+
+        canvas {
+            background-color: black;
+        }
+        .link{
+            position: absolute;
+            z-index: 1000;
+            top: 5%;
+            left: 48%;
+            border: 1px solid black;
+            border-radius: 10px;
+            background-color: red;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+    <a class="link" href="index2.html">Hình tròn</a>
+    <div class="container">
+
+        <div class="main">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("canvas");
+
+        const ctx = canvas.getContext("2d");
+
+        const canvasWidth = 600;
+        const canvasHeight = 400;
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+
+        const lineLength = 130;
+        const lineWidth = 1;
+        const totalLines = 500;
+        const delay = 10;   
+        let lines = [];
+        let currentBatch = 0;
+
+        const offset = 0.5;
+
+        const colorSequence = ["red", "blue", "purple", "pink", "orange"];
+        let currentColorIndex = 0;
+
+        function getColor(index) {
+            let baseColor = colorSequence[currentColorIndex];
+            let fadeFactor = index / totalLines;
+            let color = `rgb(${fadeColor(baseColor, fadeFactor)})`;
+            return color;
+        }
+        
+        function fadeColor(color, factor) {
+            const colors = {
+                red: [255, 0, 0],
+                blue: [0, 0, 255],
+                purple: [128, 0, 128],
+                pink: [255, 105, 180],
+                orange: [255, 165, 0]
+            };
+
+            let [r, g, b] = colors[color];
+            r = Math.floor(r + (255 - r) * factor);
+            g = Math.floor(g + (255 - g) * factor);
+            b = Math.floor(b + (255 - b) * factor);
+            return `${r}, ${g}, ${b}`;
+        }
+
+        function initializeLines() {
+            lines = [];
+            for (let i = 0; i < totalLines; i++) {
+                lines.push({
+                    x: i * lineWidth,
+                    yStart: i * offset,
+                    visible: false,
+                    color: getColor(i),
+                });
+            }
+        }
+
+        function drawLines() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < totalLines; i++) {
+                let line = lines[i];
+                if (line.visible) {
+                    ctx.beginPath();
+                    ctx.moveTo(line.x, line.yStart);
+                    ctx.lineTo(line.x, line.yStart + lineLength);
+                    ctx.strokeStyle = line.color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function animateLines(index = 0) {
+            if (index < totalLines) {
+                lines[index].visible = true;
+                drawLines();
+                setTimeout(() => animateLines(index + 1), delay);
+            } else {
+                setTimeout(() => startNewBatch(), 1000);
+            }
+        }
+
+        function startNewBatch() {
+            currentColorIndex = (currentColorIndex + 1) % colorSequence.length;
+            initializeLines();
+            animateLines();
+        }
+
+        initializeLines();
+        animateLines();
+    </script>
+</body>
+
+</html>

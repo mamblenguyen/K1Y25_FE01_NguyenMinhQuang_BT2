@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hiệu Ứng Hình Tròn Lặp Lại</title>
+    <style>
+        .container{
+            position: relative;
+            margin: 0;
+            overflow: hidden;
+            background-color: blue; 
+            margin-top: 10px;
+        }
+        canvas {
+            display: block;
+        }
+        .link{
+            position: absolute;
+            z-index: 1000;
+            top: 5%;
+            left: 48%;
+            border: 1px solid black;
+            border-radius: 10px;
+            background-color: red;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <a class="link" href="index.html">Hình xoắn</a>
+    <div class="container">
+        <canvas id="myCanvas"></canvas>
+    </div>
+    <script>
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let radius = 10; 
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const maxRadius = canvas.width / 10; 
+        let speed = 0.1; 
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            radius += speed; 
+            if (radius >= maxRadius) {
+                radius = 10; 
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
